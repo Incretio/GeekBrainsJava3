@@ -1,4 +1,4 @@
-package client;
+package messanger.client;
 
 import java.io.*;
 import java.net.Socket;

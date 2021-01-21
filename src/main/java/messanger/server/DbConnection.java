@@ -1,4 +1,4 @@
-package server;
+package messanger.server;
 
 import org.sqlite.JDBC;
 

@@ -1,4 +1,4 @@
-package server;
+package messanger.server;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
