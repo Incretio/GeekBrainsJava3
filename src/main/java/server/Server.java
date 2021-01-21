@@ -13,6 +13,10 @@ import java.util.stream.Collectors;
 public class Server {
     public static void main(String[] args) throws SQLException {
         Server server = new Server();
+
+        server.setDbConnection(new DbConnection("jdbc:sqlite:db/messenger.db"));
+        server.dbConnection.connect();
+
         server.startListenerForClients();
         System.out.println("Запущены слушатели клиентов.");
         while (true) {
@@ -24,6 +28,7 @@ public class Server {
         }
     }
 
+    private DbConnection dbConnection;
     private volatile List<SocketConnection> socketConnectionList = Collections.synchronizedList(new ArrayList<>());
 
     private void startListenerForClients() {
@@ -58,6 +63,9 @@ public class Server {
         if (message.getMessageType() == MessageType.TEXT) {
             processTextMessage(message);
         }
+        if (message.getMessageType() == MessageType.AUTH) {
+            processAuthMessage(message);
+        }
     }
 
     private void processTextMessage(Message message) {
@@ -68,8 +76,33 @@ public class Server {
         }
     }
 
+    private void processAuthMessage(Message message) {
+        String[] splitted = message.getContent().split(" ");
+        if (splitted.length == 2) {
+            String login = splitted[0];
+            String password = splitted[1];
+            if (dbConnection.checkUser(login, password)) {
+                message.getOwner().setActive(true);
+                message.getOwner().setName(login);
+                message.getOwner().writeMessage("Вы авторизовались как " + login);
+            } else {
+                message.getOwner().writeMessage("Ошибка авторизации");
+            }
+        } else {
+            message.getOwner().writeMessage("Некорретный формат запроса. [\\auth login password]");
+        }
+
+    }
+
     private List<SocketConnection> takeActiveConnections() {
         return socketConnectionList.stream().filter(SocketConnection::isActive).collect(Collectors.toList());
     }
 
+    public DbConnection getDbConnection() {
+        return dbConnection;
+    }
+
+    public void setDbConnection(DbConnection dbConnection) {
+        this.dbConnection = dbConnection;
+    }
 }

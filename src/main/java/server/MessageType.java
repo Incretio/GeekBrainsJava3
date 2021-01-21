@@ -2,7 +2,8 @@ package server;
 
 public enum MessageType {
     NON("\\non"),
-    TEXT("\\message");
+    TEXT("\\message"),
+    AUTH("\\auth");
 
     private final String command;
 
