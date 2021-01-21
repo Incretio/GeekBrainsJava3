@@ -3,7 +3,8 @@ package server;
 public enum MessageType {
     NON("\\non"),
     TEXT("\\message"),
-    AUTH("\\auth");
+    AUTH("\\auth"),
+    RENAME("\\rename");
 
     private final String command;
 

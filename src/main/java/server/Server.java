@@ -62,9 +62,10 @@ public class Server {
     private void processMessage(Message message) {
         if (message.getMessageType() == MessageType.TEXT) {
             processTextMessage(message);
-        }
-        if (message.getMessageType() == MessageType.AUTH) {
+        } else if (message.getMessageType() == MessageType.AUTH) {
             processAuthMessage(message);
+        } else if (message.getMessageType() == MessageType.RENAME) {
+            processRenameMessage(message);
         }
     }
 
@@ -91,7 +92,15 @@ public class Server {
         } else {
             message.getOwner().writeMessage("Некорретный формат запроса. [\\auth login password]");
         }
+    }
 
+    private void processRenameMessage(Message message) {
+        if (message.getContent().isEmpty() || message.getContent().contains(" ")) {
+            message.getOwner().writeMessage("Некорретный формат запроса. [\\rename new_login]");
+        } else {
+            message.getOwner().setName(message.getContent());
+            message.getOwner().writeMessage("Вы изменили свой ник на " + message.getContent());
+        }
     }
 
     private List<SocketConnection> takeActiveConnections() {
