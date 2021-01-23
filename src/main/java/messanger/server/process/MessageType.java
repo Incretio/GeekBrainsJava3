@@ -1,4 +1,4 @@
-package messanger.server;
+package messanger.server.process;
 
 public enum MessageType {
     NON("\\non"),

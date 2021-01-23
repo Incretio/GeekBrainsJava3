@@ -1,5 +1,7 @@
 package messanger.server;
 
+import messanger.server.process.Message;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Optional;
@@ -8,7 +10,7 @@ public class SocketConnection {
 
     private final Socket socket;
 
-    private boolean active = true;
+    private boolean active = false;
     private String name = "anonymous";
     private BufferedReader reader;
     private BufferedWriter writer;

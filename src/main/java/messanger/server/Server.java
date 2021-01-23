@@ -1,5 +1,7 @@
 package messanger.server;
 
+import messanger.server.process.Message;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -52,54 +54,10 @@ public class Server {
         for (SocketConnection socketConnection : socketConnectionList) {
             try {
                 Optional<Message> message = socketConnection.readMessage();
-                message.ifPresent(this::processMessage);
+                message.ifPresent(messageValue -> messageValue.process(takeActiveConnections(), dbConnection));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private void processMessage(Message message) {
-        if (message.getMessageType() == MessageType.TEXT) {
-            processTextMessage(message);
-        } else if (message.getMessageType() == MessageType.AUTH) {
-            processAuthMessage(message);
-        } else if (message.getMessageType() == MessageType.RENAME) {
-            processRenameMessage(message);
-        }
-    }
-
-    private void processTextMessage(Message message) {
-        for (SocketConnection socketConnection : takeActiveConnections()) {
-            System.out.println(
-                String.format("Клиенту %s отправлено сообщение: %s", socketConnection.getName(), message.getContent()));
-            socketConnection.writeMessage(new TextMessage().format(message));
-        }
-    }
-
-    private void processAuthMessage(Message message) {
-        String[] splitted = message.getContent().split(" ");
-        if (splitted.length == 2) {
-            String login = splitted[0];
-            String password = splitted[1];
-            if (dbConnection.checkUser(login, password)) {
-                message.getOwner().setActive(true);
-                message.getOwner().setName(login);
-                message.getOwner().writeMessage("Вы авторизовались как " + login);
-            } else {
-                message.getOwner().writeMessage("Ошибка авторизации");
-            }
-        } else {
-            message.getOwner().writeMessage("Некорретный формат запроса. [\\auth login password]");
-        }
-    }
-
-    private void processRenameMessage(Message message) {
-        if (message.getContent().isEmpty() || message.getContent().contains(" ")) {
-            message.getOwner().writeMessage("Некорретный формат запроса. [\\rename new_login]");
-        } else {
-            message.getOwner().setName(message.getContent());
-            message.getOwner().writeMessage("Вы изменили свой ник на " + message.getContent());
         }
     }
 
