@@ -37,7 +37,6 @@ public class SocketConnection {
             writer.write(message + "\n");
             writer.flush();
         } catch (IOException e) {
-            e.printStackTrace();
             active = false;
         }
     }
