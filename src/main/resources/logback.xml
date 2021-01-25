@@ -1,0 +1,15 @@
+<configuration>
+
+    <appender name="FileAppender" class="ch.qos.logback.core.FileAppender">
+        <file>base.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="debug">
+        <appender-ref ref="FileAppender" />
+    </root>
+
+</configuration>

@@ -1,6 +1,8 @@
 package messanger.server;
 
 import messanger.server.process.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,6 +17,9 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class Server {
+
+    private static final Logger logger = LoggerFactory.getLogger(Server.class);
+
     public static void main(String[] args) throws SQLException {
         Server server = new Server();
 
@@ -22,7 +27,7 @@ public class Server {
         server.dbConnection.connect();
 
         server.startListenerForClients();
-        System.out.println("Запущены слушатели клиентов.");
+        logger.debug("Запущены слушатели клиентов.");
         while (true) {
             try {
                 server.processClients();
@@ -44,11 +49,10 @@ public class Server {
                     SocketConnection socketConnection = new SocketConnection(clientSocket);
                     socketConnection.prepare();
                     socketConnectionList.add(socketConnection);
-                    System.out.println("Подключен клиент");
+                    logger.debug("Подключен клиент");
                 }
             } catch (IOException e) {
-                System.err.println(e.getMessage());
-                e.printStackTrace();
+                logger.error("Socket open ERROR", e);
             }
         });
     }
@@ -59,7 +63,7 @@ public class Server {
                 Optional<Message> message = socketConnection.readMessage();
                 message.ifPresent(messageValue -> messageValue.process(takeActiveConnections(), dbConnection));
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Process message ERROR", e);
             }
         }
     }

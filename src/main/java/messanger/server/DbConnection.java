@@ -1,5 +1,7 @@
 package messanger.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sqlite.JDBC;
 
 import java.sql.*;
@@ -10,6 +12,8 @@ import java.sql.*;
  * "2"     "user1"     "654321"
  */
 public class DbConnection {
+
+    private static final Logger logger = LoggerFactory.getLogger(DbConnection.class);
 
     private final String connectionString;
     private Connection connection;
@@ -31,7 +35,7 @@ public class DbConnection {
             ResultSet resultSet = statement.executeQuery();
             return resultSet.getInt(1) > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("Execute query ERROR", e);
             return false;
         }
     }
