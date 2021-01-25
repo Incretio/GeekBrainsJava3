@@ -36,6 +36,9 @@ public class Client {
                 }
             } finally {
                 System.out.println("Клиент был закрыт...");
+                if (reader != null) {
+                    reader.close();
+                }
                 if (in != null) {
                     in.close();
                 }
