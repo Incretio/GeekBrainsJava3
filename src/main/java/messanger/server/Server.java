@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class Server {
@@ -34,7 +36,8 @@ public class Server {
     private volatile List<SocketConnection> socketConnectionList = Collections.synchronizedList(new ArrayList<>());
 
     private void startListenerForClients() {
-        new Thread(() -> {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.execute(() -> {
             try (ServerSocket serverSocket = new ServerSocket(10001)) {
                 while (true) {
                     Socket clientSocket = serverSocket.accept();
@@ -47,7 +50,7 @@ public class Server {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
             }
-        }).start();
+        });
     }
 
     private void processClients() {
